@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
 '''
-Cranklin's Instagram Bot v.1.0
+Cranklin's Instagram Bot v.1.1
 ==============================
 Check www.cranklin.com for updates
-
+Katazui Update: v1.1
 
 This bot gets you more likes and followers on your Instagram account.  
 
@@ -26,6 +26,10 @@ v1.0 updates:
 - added optional sleep timer 
 - added optional hashtag limiter
 - added a couple extra additions for some people experiencing SSL errors.  (thanks Charlie)
+
+v1.1 updates:
+- Editing wording
+- Added Max Like Limit
 *** thank you Nick, John, Max, Shahar, Charlie for the help
 '''
 
@@ -43,13 +47,16 @@ username = "username"
 password = "password"
 
 #set a sleep timer between each like.  Set value to 0 if you don't want it to sleep at all
-sleeptimer = 5
+sleeptimer = 10
+
+#max number of likes before going to sleep for an hour
+maxlikes = 25
 
 #set a like limit per hashtag.  Set value to 0 if you don't want a limit
-hashtaglikelimit = 100
+hashtaglikelimit = 50
 
 #your list of hashtags
-hashtags = ["love","instagood","me","cute","photooftheday","tbt","instamood","iphonesia","picoftheday","igers","girl","beautiful","instadaily","tweegram","summer","instagramhub","follow","bestoftheday","iphoneonly","igdaily","happy","picstitch","webstagram","fashion","sky","nofilter","jj","followme","fun","smile","sun","pretty","instagramers","food","like","friends","lol","hair","nature","swag","onedirection","bored","funny","life","cool","beach","blue","dog","pink","art","hot","my","family","sunset","photo","versagram","instahub","amazing","statigram","girls","cat","awesome","throwbackthursday","repost","clouds","baby","red","music","party","black","instalove","night","textgram","followback","all_shots","jj_forum","igaddict","yummy","white","yum","bestfriend","green","school","likeforlike","eyes","sweet","instago","tagsforlikes","style","harrystyles","2012","foodporn","beauty","ignation","niallhoran","i","boy","nice","halloween","instacollage"]
+hashtags = ["love","instagood","me","cute","photooftheday","tbt","instamood","tgod","picoftheday","igers","girl","beautiful","instadaily","tweegram","summer","instagramhub","follow","bestoftheday","iphoneonly","igdaily","happy","picstitch","webstagram","fashion","sky","nofilter","jj","followme","fun","smile","sun","pretty","instagramers","food","like","friends","lol","hair","nature","swag","onedirection","follow4follow","bored","funny","life","cool","beach","blue","dog","pink","art","hot","my","family","sunset","photo","versagram","instahub","amazing","statigram","girls","cat","awesome","throwbackthursday","repost","clouds","baby","red","music","party","black","instalove","night","textgram","followback","all_shots","jj_forum","igaddict","yummy","white","yum","bestfriend","green","school","likeforlike","eyes","sweet","instago","tagsforlikes","style","harrystyles","2012","foodporn","beauty","ignation","niallhoran","i","boy","nice","halloween","instacollage","undertheinfluence","wizkhalifa","taylorgang"]
 
 ##### NO NEED TO EDIT BELOW THIS LINE
 
@@ -135,6 +142,7 @@ def login():
 def like():
     likecount = 0
     sleepcount = 0
+    maxlikecount = 0
     for tag in hashtags:
         hashtaglikes = 0
         nextpage = "http://web.stagram.com/tag/"+tag+"/?vm=list"
@@ -193,15 +201,23 @@ def like():
                         buf.close()
                         if postData == '''{"status":"OK","message":"LIKED"}''':
                             likecount += 1
+                            maxlikecount += 1
                             hashtaglikes += 1
-                            print "You liked #"+tag+" image "+imageid+"! Like count: "+str(likecount)
+                            print "You liked #"+tag+" image! Like count: "+str(likecount)+". Image ID: ["+imageid+"]"
                             repeat = False
                             sleepcount = 0
+                            
+                            
+                            if maxlikecount > 0 and maxlikecount == maxlikes:
+                                print "You liked "+maxlikes+" photos! It's time to rest for an hour."
+                                maxlikecount = 0
+                                time.sleep(3600)
+                            
                             if sleeptimer > 0:
                                 time.sleep(sleeptimer)
                         else:
                             sleepcount += 1
-                            print "Your account has been rate limited. Sleeping on "+tag+" for "+str(sleepcount)+" minute(s). Liked "+str(likecount)+" photo(s)..."
+                            print "Your account has been rate limited. Waiting on #"+tag+" for "+str(sleepcount)+" minute(s). Liked "+str(likecount)+" photo(s)."
                             time.sleep(60)
 
 def main():
